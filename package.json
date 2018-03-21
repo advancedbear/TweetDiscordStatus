@@ -18,6 +18,8 @@
   "homepage": "https://github.com/advancedbear/TweetDiscordStatus#readme",
   "dependencies": {
     "discord.js": "^11.3.2",
-    "twitter": "^1.7.1"
+    "opener": "^1.4.3",
+    "twitter": "^1.7.1",
+    "twitter-pin-auth": "^0.2.0"
   }
 }

@@ -1,9 +1,50 @@
 const fs = require('fs');
+const opener = require("opener");
 const twitter = require('twitter');
+const PinAuth = require('twitter-pin-auth');
 const Discord = require('discord.js');
 const config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
 
 const help = fs.readFileSync("doc/help.txt");
+
+if(process.argv[2] === "--auth"){
+    let TwitterPinAuth = new PinAuth(config.twitter.consumer_key, config.twitter.consumer_secret, null, false);
+    if(process.argv.length == 3){
+    TwitterPinAuth.requestAuthUrl()
+        .then((url) => {
+            console.log('Twitter login page will open automatically.\nPlease login with your twitter account.');
+            console.log(url);
+            console.log('Copy PIN code and paste it after "--auth" command.\n(ex. "node index.js --auth 112233")');
+            config.twitter._data = TwitterPinAuth._data;
+            fs.writeFileSync("config.json", JSON.stringify(config));
+            let browser = opener(url,null, (error, stdout, stderr)=>{
+                process.exit(0);
+            });
+        });
+    } else if(process.argv.length == 4){
+    let pin = Number(process.argv[3]);
+    TwitterPinAuth._data = config.twitter._data;
+    config.twitter._data = null;
+    TwitterPinAuth.authorize(pin)
+        .then((data) => {
+            config.twitter.access_token_key = data.accessTokenKey;
+            config.twitter.access_token_secret = data.accessTokenSecret;
+            fs.writeFileSync("config.json", JSON.stringify(config, null, "\t"));
+            console.log('Authorization finished!');
+            process.exit(0);
+        })
+        .catch((err) => {
+            console.error('Authorization failed! Please check PIN number!\nYou need to restart authorization from "--auth".');
+            console.error(err);
+            process.exit(-1);
+        });
+    }
+} else {
+    if(config.twitter.access_token_key == ""){
+        console.log('Please authorize twitter account at first.\nYou can authorize twitter account by "--auth" option.');
+        process.exit(-1);
+    }
+}
 
 var tClient = new twitter({
     consumer_key: config.twitter.consumer_key,

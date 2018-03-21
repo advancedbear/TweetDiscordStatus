@@ -1,11 +1,12 @@
 {
-    "twitter": {
-        "consumer_key": "",
-        "consumer_secret": "",
-        "access_token_key": "",
-        "access_token_secret": ""
+    "twitter":{
+        "consumer_key":"9QPsuGkqFUxwdcxr9d5P14hSC",
+        "consumer_secret":"TFAXgfpPLKIm6mXUaiFRa595PNPNkGbLwwSfmrVtuMFZXrxpnl",
+        "access_token_key":"",
+        "access_token_secret":"",
+        "_data":null
     },
-    "discord": {
-        "token": ""
+    "discord":{
+        "token":""
     }
 }
