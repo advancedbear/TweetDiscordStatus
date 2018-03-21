@@ -1,0 +1,23 @@
+{
+  "name": "discordstatusbot",
+  "version": "1.0.0",
+  "description": "Tweet Didscord members presense and voice channel joining.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/advancedbear/TweetDiscordStatus.git"
+  },
+  "author": "advancedbear",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/advancedbear/TweetDiscordStatus/issues"
+  },
+  "homepage": "https://github.com/advancedbear/TweetDiscordStatus#readme",
+  "dependencies": {
+    "discord.js": "^11.3.2",
+    "twitter": "^1.7.1"
+  }
+}
