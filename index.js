@@ -20,6 +20,11 @@ if(process.argv[2] === "--auth"){
             let browser = opener(url,null, (error, stdout, stderr)=>{
                 process.exit(0);
             });
+        })
+        .catch((err) => {
+            console.error('!!!!!!!!!!Authorization failed!!!!!!!!!!\nPlease check internet connection or time setting.');
+            console.error(err);
+            process.exit(-1);
         });
     } else if(process.argv.length == 4){
     let pin = Number(process.argv[3]);
@@ -34,14 +39,14 @@ if(process.argv[2] === "--auth"){
             process.exit(0);
         })
         .catch((err) => {
-            console.error('!!!!!!!!!!Authorization failed!!!!!!!!!!\nPlease check PIN number! You need to restart authorization from "--auth".');
+            console.error('!!!!!!!!!!Authorization failed!!!!!!!!!!\nPlease check PIN number and internet connection! You need to restart authorization from "--auth".');
             console.error(err);
             process.exit(-1);
         });
     }
 } else if(process.argv[2] === "--join"){
-    if(process.argv.length == 4){
-        let clientId = process.argv[3];
+    if(process.argv.length == 3){
+        let clientId = config.discord.client_id;
         let botJoinUrl = "https://discordapp.com/oauth2/authorize?scope=bot&client_id="+clientId;
         console.log("BOT adding page will open automatically.\nPlease add BOT account to the server.")
         opener(botJoinUrl, null, (error, stdout, stderr) => {
@@ -65,7 +70,10 @@ var tClient = new twitter({
 var dClient = new Discord.Client();
 
 var status = config.status;
-if(status === "" || status === null) status = {"invite": false, "VCjoin": false, "presence": false};
+if(status == "" || status == null){
+    status = config.status = {"invite": false, "VCjoin": false, "presence": false};
+    fs.writeFileSync("config.json", JSON.stringify(config, null, "\t"));
+}
 
 var getNowTime = function(){
     let date = new Date();
@@ -88,12 +96,14 @@ var postTweet = function(message){
     )
 }
 
-var invite = function(sender){
+var invite = function(sender, num){
     let title = sender.presence.game;
     let from = sender.user.username;
     let server = sender.guild.name;
-    if(title!=null) return from+'さんが'+title+'への参加者を募集しています。 ('+getNowTime()+')';
-    else return from+'さんが'+server+'サーバーへの参加者を募集しています。 ('+getNowTime()+')';
+    num = isNaN(num) ? 0 : num;
+    let number = num>0 ? ' 【＠'+num+'人】' : '';
+    if(title!=null) return from+'さんが'+title+'への参加者を募集しています。'+number+' ('+getNowTime()+')';
+    else return from+'さんが'+server+'サーバーへの参加者を募集しています。'+number+' ('+getNowTime()+')';
 }
 
 var getStatus = function(){
@@ -127,12 +137,18 @@ dClient.on('message', (message) => {
         message.channel.send(help.toString());
     } else if (message.content === '--status'){
         message.channel.send(JSON.stringify(status, null, "   "));
-    } else if (message.content === '--invite'){
-        let tweetID = postTweet(invite(message.member));
+    } else if (message.content.startsWith('--invite') && config.status.invite){
+        if(args.length == 2) {
+            postTweet(invite(message.member, args[1]));
+            message.channel.send(invite(message.member, args[1]));
+        } else {
+            postTweet(invite(message.member, 0));
+            message.channel.send(invite(message.member, 0));
+        }
     } else if (message.content.startsWith('--enable')){
-        if( args.length == 2) setStatus(args[1], true);
+        if(args.length == 2) setStatus(args[1], true);
     } else if (message.content.startsWith('--disable')){
-        if( args.length == 2) setStatus(args[1], false);
+        if(args.length == 2) setStatus(args[1], false);
     } else if (message.content === '--shutdown'){
         if(message.member.permissions.has("MANAGE_CHANNELS")) {
             let mes = 'DiscordStatusBOT has been shutdown by '+message.member.user.username+'.';
