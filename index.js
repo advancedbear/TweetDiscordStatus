@@ -3,9 +3,13 @@ const opener = require("opener");
 const twitter = require('twitter');
 const PinAuth = require('twitter-pin-auth');
 const Discord = require('discord.js');
-const config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
-
-const help = fs.readFileSync("doc/help.txt");
+try {
+    const config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+    const help = fs.readFileSync("doc/help.txt");
+} catch(err){
+    console.error(err);
+    process.exit(-1);
+}
 
 if(process.argv[2] === "--auth"){
     let TwitterPinAuth = new PinAuth(config.twitter.consumer_key, config.twitter.consumer_secret, null, false);
@@ -27,35 +31,35 @@ if(process.argv[2] === "--auth"){
             process.exit(-1);
         });
     } else if(process.argv.length == 4){
-    let pin = Number(process.argv[3]);
-    TwitterPinAuth._data = config.twitter._data;
-    config.twitter._data = null;
-    TwitterPinAuth.authorize(pin)
-        .then((data) => {
-            config.twitter.access_token_key = data.accessTokenKey;
-            config.twitter.access_token_secret = data.accessTokenSecret;
-            fs.writeFileSync("config.json", JSON.stringify(config, null, "\t"));
-            console.log('*********Authorization finished!*********\nPlease add BotUser to your Discord server. Execute "--join <Client-ID>" command.');
-            process.exit(0);
-        })
-        .catch((err) => {
-            console.error('!!!!!!!!!!Authorization failed!!!!!!!!!!\nPlease check PIN number and internet connection! You need to restart authorization from "--auth".');
-            console.error(err);
-            process.exit(-1);
-        });
+        let pin = Number(process.argv[3]);
+        TwitterPinAuth._data = config.twitter._data;
+        config.twitter._data = null;
+        TwitterPinAuth.authorize(pin)
+            .then((data) => {
+                config.twitter.access_token_key = data.accessTokenKey;
+                config.twitter.access_token_secret = data.accessTokenSecret;
+                fs.writeFileSync("config.json", JSON.stringify(config, null, "\t"));
+                console.info('*********Authorization finished!*********\nPlease add BotUser to your Discord server. Execute "--join <Client-ID>" command.');
+                process.exit(0);
+            })
+            .catch((err) => {
+                console.error('!!!!!!!!!!Authorization failed!!!!!!!!!!\nPlease check PIN number and internet connection! You need to restart authorization from "--auth".');
+                console.error(err);
+                process.exit(-1);
+            });
     }
 } else if(process.argv[2] === "--join"){
     if(process.argv.length == 3){
         let clientId = config.discord.client_id;
         let botJoinUrl = "https://discordapp.com/oauth2/authorize?scope=bot&client_id="+clientId;
-        console.log("BOT adding page will open automatically.\nPlease add BOT account to the server.")
+        console.info("BOT adding page will open automatically.\nPlease add BOT account to the server.")
         opener(botJoinUrl, null, (error, stdout, stderr) => {
             process.exit(0);
         })
     }
 } else {
     if(config.twitter.access_token_key == ""){
-        console.log('Please authorize twitter account at first.\nYou can authorize twitter account by "--auth" option.');
+        console.info('Please authorize twitter account at first.\nYou can authorize twitter account by "--auth" option.');
         process.exit(-1);
     }
 }
@@ -69,9 +73,8 @@ var tClient = new twitter({
 
 var dClient = new Discord.Client();
 
-var status = config.status;
-if(status == "" || status == null){
-    status = config.status = {"invite": false, "VCjoin": false, "presence": false};
+if(config.status == "" || config.status == null){
+    config.status = {"invite": false, "VCjoin": false, "presence": false};
     fs.writeFileSync("config.json", JSON.stringify(config, null, "\t"));
 }
 
@@ -115,10 +118,10 @@ var getStatus = function(){
 }
 
 var setStatus = function(func, bool){
-    if(!(func in status)) return -1;
+    if(func === 'all') config.status.forEach(element => { config.status[element] = bool });
+    else if(!(func in config.status)) return -1;
     else {
-        status[func] = bool;
-        config.status = status;
+        config.status[func] = bool;
         fs.writeFileSync("config.json", JSON.stringify(config, null, "\t"));
     }
 }
@@ -126,7 +129,7 @@ var setStatus = function(func, bool){
 dClient.login(config.discord.token);
 
 dClient.on('ready', () => {
-    console.log('BOT ready!');
+    console.log('BOT ready!'); 
     postTweet('DiscordStatusBOT on ready! ('+getNowTime()+')');
 });
 
@@ -159,19 +162,25 @@ dClient.on('message', (message) => {
 });
 
 dClient.on('presenceUpdate', (oldMember, newMember) => {
-    if(status.presence) {
-        let newGame = newMember.presence.game;
-        let oldGame = oldMember.presence.game;
-        let username = newMember.user.username;
-        let tweetMessage;
-        if(newGame==null) tweetMessage = username +' stopped playing "'+oldGame.name+'". ('+getNowTime()+')';
-        else tweetMessage = username +' is now playing "'+newGame.name+'". ('+getNowTime()+')';
-        let tweetID = postTweet(tweetMessage);
+    if(config.status.presence) {
+        if(newMember.presence.game != null || oldMember.presence.game != null){
+            let newGame = newMember.presence.game;
+            let oldGame = oldMember.presence.game;
+            let username = newMember.user.username;
+            let tweetMessage;
+            if(newGame==null) tweetMessage = username +' stopped playing "'+oldGame.name+'". ('+getNowTime()+')';
+            else tweetMessage = username +' is now playing "'+newGame.name+'". ('+getNowTime()+')';
+            postTweet(tweetMessage);
+        }else if(oldMember.presence.status === "offline" && newMember.presence.status === "online"){
+            postTweet('○'+newMember.user.username + 'is now online. ('+getNowTime()+')');
+        } else if (oldMember.presence.status === "online" && newMember.presence.status === "offline"){
+            postTweet('×'+newMember.user.username + 'is now offline. ('+getNowTime()+')');
+        }
     }
 });
 
 dClient.on('voiceStateUpdate', (oldMember, newMember) => {
-    if(status.VCjoin) {
+    if(config.status.VCjoin) {
         let username = newMember.user.username;
         let serverName = newMember.guild.name;
         if(oldMember.voiceChannel == null && newMember.voiceChannel != null){
@@ -181,3 +190,8 @@ dClient.on('voiceStateUpdate', (oldMember, newMember) => {
         }
     }
 });
+
+dClient.on('error', (error) => {
+    console.error(error);
+    process.exit(-1);
+})

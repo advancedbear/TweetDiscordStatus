@@ -81,10 +81,10 @@ List of Commands
 --invite
 　参加者の募集メッセージをツイートします。
 　ゲームをプレイ中の場合、ツイート文にゲーム名が含まれます。
---enable [invite|channel|game]
+--enable [invite|channel|game|all]
 　参加者募集、ボイスチャンネル入退室、ゲーム開始、それぞれの
 　通知機能をオンにします。
---disable [invite|channel|game]
+--disable [invite|channel|game|all]
 　参加者募集、ボイスチャンネル入退室、ゲーム開始、それぞれの
 　通知機能をオフにします。
 --shutdown
