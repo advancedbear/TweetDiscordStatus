@@ -3,13 +3,8 @@ const opener = require("opener");
 const twitter = require('twitter');
 const PinAuth = require('twitter-pin-auth');
 const Discord = require('discord.js');
-try {
-    const config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
-    const help = fs.readFileSync("doc/help.txt");
-} catch(err){
-    console.error(err);
-    process.exit(-1);
-}
+const config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+const help = fs.readFileSync("doc/help.txt");
 
 if(process.argv[2] === "--auth"){
     let TwitterPinAuth = new PinAuth(config.twitter.consumer_key, config.twitter.consumer_secret, null, false);
