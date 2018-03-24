@@ -32,7 +32,8 @@ $ node index.js
 
 ## セットアップ
 1. [Discord My Apps](https://discordapp.com/developers/applications/me)でBOTアカウントを作成する。 => [doc/DiscordBOT.md](doc/DiscordBOT.md)
-1. フォルダ内のconfig.jsonをテキストエディタで開く
+1. フォルダ内の *config.sample.json* を *config.json* にリネームする
+1. *config.json* をテキストエディタで開く
 1. 用意したBOTアカウントのClient IDとTokenを、discord節以下のclient_idとtokenに入力する
 ```
 "discord": {

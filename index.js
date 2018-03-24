@@ -3,8 +3,14 @@ const opener = require("opener");
 const twitter = require('twitter');
 const PinAuth = require('twitter-pin-auth');
 const Discord = require('discord.js');
-const config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
-const help = fs.readFileSync("doc/help.txt");
+try{
+    var config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+} catch(err){
+    console.error(err);
+    console.error('\n\n"config.json" not found!\nDid you copy and rename "config.sample.json" to "config.json"?\n');
+    console.error('Please read setup section of "README.md" at first.');
+}
+var help = fs.readFileSync("doc/help.txt");
 
 if(process.argv[2] === "--auth"){
     let TwitterPinAuth = new PinAuth(config.twitter.consumer_key, config.twitter.consumer_secret, null, false);
