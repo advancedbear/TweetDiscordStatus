@@ -57,6 +57,10 @@ if(process.argv[2] === "--auth"){
         console.info('Please authorize twitter account at first.\nYou can authorize twitter account by "--auth" option.');
         process.exit(-1);
     }
+    if(config.discord.token == "" || config.discord.client_id == ""){
+        console.error('Please add Discord Token and Discord ClientID in "config.json" at first.');
+        process.exit(-1);
+    }
 }
 
 var tClient = new twitter({
@@ -125,6 +129,7 @@ dClient.login(config.discord.token);
 
 dClient.on('ready', () => {
     console.log('BOT ready!'); 
+    console.info('If you close this console, BOT will shutdown immediately.\nIf you want to run in background, use "forever" or "pm2".\nMore information in "README.md".');
     postTweet('DiscordStatusBOT on ready! ('+getNowTime()+')');
 });
 

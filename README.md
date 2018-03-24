@@ -9,17 +9,17 @@ Discordサーバーを監視し、音声チャンネルへの参加/退出やメ
     - 人数制限がある場合は残り人数を入力可能
 
 ## 必要環境
-- [Node.js](https://nodejs.org/ja/) (LTS版のみサポート）
-- [git](https://git-scm.com/)（あると便利）
+- [Node.js](https://nodejs.org/ja/) （LTS版のみサポート）
+- [git](https://git-scm.com/)（あると更新時とかに便利）
 - Twitterアカウント
 - Discordアカウント
-- BOTを動作させるPC
+- BOTを動作させるPC（Windows/Linux両対応）
 
 ## インストール
 ### Gitあり
 ```
-$ git pull https://github.com/advancedbear/TweetDiscordStatus.git
-$ cd TweetDisocrdStatus
+$ git clone https://github.com/advancedbear/TweetDiscordStatus.git
+$ cd TweetDiscordStatus
 $ npm install
 $ node index.js
 ```
@@ -79,9 +79,10 @@ List of Commands
 　このヘルプを表示します。
 --status
 　通知機能のオン/オフ状態を表示します
---invite
+--invite [number]
 　参加者の募集メッセージをツイートします。
 　ゲームをプレイ中の場合、ツイート文にゲーム名が含まれます。
+　[number]部に数値を指定すると【@n名】の人数指定が追加されます。
 --enable [invite|channel|game|all]
 　参加者募集、ボイスチャンネル入退室、ゲーム開始、それぞれの
 　通知機能をオンにします。
