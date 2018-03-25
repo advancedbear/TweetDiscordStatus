@@ -178,9 +178,9 @@ dClient.on('presenceUpdate', (oldMember, newMember) => {
             else tweetMessage = username +' is now playing "'+newGame.name+'". ('+getNowTime()+')';
             postTweet(tweetMessage);
         }else if(oldMember.presence.status === "offline" && newMember.presence.status === "online"){
-            postTweet('○'+newMember.user.username + 'is now online. ('+getNowTime()+')');
+            postTweet('○ '+newMember.user.username + ' is now online. ('+getNowTime()+')');
         } else if (oldMember.presence.status === "online" && newMember.presence.status === "offline"){
-            postTweet('×'+newMember.user.username + 'is now offline. ('+getNowTime()+')');
+            postTweet('× '+newMember.user.username + ' is now offline. ('+getNowTime()+')');
         }
     }
 });
