@@ -105,7 +105,7 @@ var postTweet = function(message){
 }
 
 var invite = function(sender, num){
-    let title = sender.presence.game;
+    let title = sender.presence.game.game;
     let from = sender.user.username;
     let server = sender.guild.name;
     num = isNaN(num) ? 0 : num;
