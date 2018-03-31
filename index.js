@@ -170,15 +170,13 @@ dClient.on('message', (message) => {
 
 dClient.on('presenceUpdate', (oldMember, newMember) => {
     if(config.status.presence) {
-        if(newMember.presence.game != null || oldMember.presence.game != null){
-            let newGame = newMember.presence.game;
-            let oldGame = oldMember.presence.game;
-            let username = newMember.user.username;
-            let tweetMessage;
-            if(newGame==null) tweetMessage = username +' stopped playing "'+oldGame.name+'". ('+getNowTime()+')';
-            else if(oldGame.name != newGame.name) tweetMessage = username +' is now playing "'+newGame.name+'". ('+getNowTime()+')';
-            tweetMessage!="" ? postTweet(tweetMessage) : null;
-        }else if(oldMember.presence.status === "offline" && newMember.presence.status === "online"){
+        if(newMember.presence.game && !oldMember.presence.game){
+            postTweet(newMember.user.username+' is now playing "'+newMember.presence.game.name+'". ('+getNowTime()+')');
+        }
+        if(!newMember.presence.game && oldMember.presence.game){
+            postTweet(newMember.user.username+' stopped playing "'+oldMember.presence.game.name+'". ('+getNowTime()+')')
+        }
+        if(oldMember.presence.status === "offline" && newMember.presence.status === "online"){
             postTweet('○ '+newMember.user.username + ' is now online. ('+getNowTime()+')');
         } else if (oldMember.presence.status === "online" && newMember.presence.status === "offline"){
             postTweet('× '+newMember.user.username + ' is now offline. ('+getNowTime()+')');
