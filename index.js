@@ -105,12 +105,12 @@ var postTweet = function(message){
 }
 
 var invite = function(sender, num){
-    let title = sender.presence.game.game;
+    let title = sender.presence.game.name;
     let from = sender.user.username;
     let server = sender.guild.name;
     num = isNaN(num) ? 0 : num;
     let number = num>0 ? ' 【＠'+num+'人】' : '';
-    if(title!=null) return from+'さんが'+title+'への参加者を募集しています。'+number+' ('+getNowTime()+')';
+    if(title!=null || title !="") return from+'さんが'+title+'への参加者を募集しています。'+number+' ('+getNowTime()+')';
     else return from+'さんが'+server+'サーバーへの参加者を募集しています。'+number+' ('+getNowTime()+')';
 }
 
@@ -174,8 +174,8 @@ dClient.on('presenceUpdate', (oldMember, newMember) => {
             let oldGame = oldMember.presence.game;
             let username = newMember.user.username;
             let tweetMessage;
-            if(newGame==null) tweetMessage = username +' stopped playing "'+oldGame.name+'". ('+getNowTime()+')';
-            else tweetMessage = username +' is now playing "'+newGame.name+'". ('+getNowTime()+')';
+            if(newGame!=null && oldGame.name != newGame.name) tweetMessage = username +' is now playing "'+newGame.name+'". ('+getNowTime()+')';
+            else tweetMessage = username +' stopped playing "'+oldGame.name+'". ('+getNowTime()+')';
             postTweet(tweetMessage);
         }else if(oldMember.presence.status === "offline" && newMember.presence.status === "online"){
             postTweet('○ '+newMember.user.username + ' is now online. ('+getNowTime()+')');
