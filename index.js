@@ -105,7 +105,8 @@ var postTweet = function(message){
 }
 
 var invite = function(sender, num){
-    let title = sender.presence.game.name;
+    let title;
+    if(sender.presence.game!=null) title = sender.presence.game.name;
     let from = sender.user.username;
     let server = sender.guild.name;
     num = isNaN(num) ? 0 : num;
@@ -115,9 +116,9 @@ var invite = function(sender, num){
 }
 
 var getStatus = function(){
-    let inviteStatus = "Invitation\t:"+status.invite;
-    let VCjoinStatus = "VC join/left\t:"+status.VCjoin;
-    let presenceStatus = "Presence\t:"+stauts.presence;
+    let inviteStatus = "Invitation\t:"+config.status.invite;
+    let VCjoinStatus = "VC join/left\t:"+config.status.VCjoin;
+    let presenceStatus = "Presence\t:"+config.stauts.presence;
     return "__**TweetDiscordStatusBOT Status**__\n```"
             +inviteStatus+"\n"+VCjoinStatus+"\n"+presenceStatus+"```\n";
 }
@@ -145,7 +146,7 @@ dClient.on('message', (message) => {
     if(message.content === '--help'){
         message.channel.send(help.toString());
     } else if (message.content === '--status'){
-        message.channel.send(JSON.stringify(status, null, "   "));
+        message.channel.send(JSON.stringify(config.status, null, "   "));
     } else if (message.content.startsWith('--invite') && config.status.invite){
         if(args.length == 2) {
             postTweet(invite(message.member, args[1]));
