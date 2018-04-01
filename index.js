@@ -86,7 +86,7 @@ if(config.status == "" || config.status == null){
 var getNowTime = function(){
     let date = new Date();
     let y = date.getFullYear();
-    let m = ('00'+date.getMonth()+1).slice(-2);
+    let m = ('00'+(date.getMonth()+1)).slice(-2);
     let d = ('00'+date.getDate()).slice(-2);
     let hour = ('00'+date.getHours()).slice(-2);
     let min = ('00'+date.getMinutes()).slice(-2);
