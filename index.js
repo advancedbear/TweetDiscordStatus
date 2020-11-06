@@ -168,30 +168,33 @@ dClient.on('message', (message) => {
     }
 });
 
-dClient.on('presenceUpdate', (oldMember, newMember) => {
+dClient.on('presenceUpdate', (oldPresence, newPresence) => {
+    console.log(newPresence)
     if(config.status.presence) {
-        if(newMember.presence.game && !oldMember.presence.game){
-            postTweet(newMember.user.username+' is now playing "'+newMember.presence.game.name+'". ('+getNowTime()+')');
+        let username = newPresence.user.username
+        if(newPresence.activities.length!=0 && !oldPresence.activities.length==0){
+            postTweet(username+' is now playing "'+newPresence.activities[0].name+'". ('+getNowTime()+')');
         }
-        if(!newMember.presence.game && oldMember.presence.game){
-            postTweet(newMember.user.username+' stopped playing "'+oldMember.presence.game.name+'". ('+getNowTime()+')')
+        if(newPresence.activities.length==0 && oldPresence.activities.length!=0){
+            postTweet(username+' stopped playing "'+oldPresence.activities[0].name+'". ('+getNowTime()+')')
         }
-        if(oldMember.presence.status === "offline" && newMember.presence.status === "online"){
-            postTweet('○ '+newMember.user.username + ' is now online. ('+getNowTime()+')');
-        } else if (oldMember.presence.status === "online" && newMember.presence.status === "offline"){
-            postTweet('× '+newMember.user.username + ' is now offline. ('+getNowTime()+')');
+        if(oldPresence.status === "offline" && newPresence.status === "online"){
+            postTweet('○ '+username + ' is now online. ('+getNowTime()+')');
+        } else if (oldPresence.status === "online" && newPresence.status === "offline"){
+            postTweet('× '+username + ' is now offline. ('+getNowTime()+')');
         }
     }
 });
 
-dClient.on('voiceStateUpdate', (oldMember, newMember) => {
+dClient.on('voiceStateUpdate', (oldPresence, newPresence) => {
+    console.log(newPresence)
     if(config.status.VCjoin) {
-        let username = newMember.user.username;
-        let serverName = newMember.guild.name;
-        if(oldMember.voiceChannel == null && newMember.voiceChannel != null){
-            postTweet(username+'さんが'+serverName+'サーバーの'+newMember.voiceChannel.name+'チャンネルに参加しました。 ('+getNowTime()+')');
-        } else if (oldMember.voiceChannel != null && newMember.voiceChannel == null){
-            postTweet(username+'さんが'+serverName+'サーバーの'+oldMember.voiceChannel.name+'チャンネルから退出しました。 ('+getNowTime()+')');
+        let username = newPresence.member.user.username;
+        let serverName = newPresence.guild.name;
+        if(oldPresence.channelID == null && newPresence.channelID != null){
+            postTweet(username+'さんが'+serverName+'サーバーの'+newPresence.channel.name+'チャンネルに参加しました。 ('+getNowTime()+')');
+        } else if (oldPresence.channelID != null && newPresence.channelID == null){
+            postTweet(username+'さんが'+serverName+'サーバーの'+oldPresence.channel.name+'チャンネルから退出しました。 ('+getNowTime()+')');
         }
     }
 });
