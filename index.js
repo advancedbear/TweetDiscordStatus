@@ -172,7 +172,7 @@ dClient.on('presenceUpdate', (oldPresence, newPresence) => {
     console.log(newPresence)
     if(config.status.presence) {
         let username = newPresence.user.username
-        if(newPresence.activities.length!=0 && !oldPresence.activities.length==0){
+        if(newPresence.activities.length!=0 && oldPresence.activities.length==0){
             postTweet(username+' is now playing "'+newPresence.activities[0].name+'". ('+getNowTime()+')');
         }
         if(newPresence.activities.length==0 && oldPresence.activities.length!=0){
